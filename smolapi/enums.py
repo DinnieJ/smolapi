@@ -1,6 +1,6 @@
 from enum import Enum
 
-class HttpMethods(Enum):
+class HttpMethod(Enum):
     GET = "GET",
     HEAD = "HEAD"
     POST = "POST"

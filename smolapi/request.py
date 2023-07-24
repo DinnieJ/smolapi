@@ -156,15 +156,16 @@ class Request(Mapping[str, typing.Any]):
     
     # @abstractmethod
     async def body(self) -> typing.Optional[typing.Union[dict, str]]:
-        
         if not hasattr(self, "_body"):
             if self.method in ["GET", "HEAD"]:
                 self._body = None
+                return self._body
             chunk_data: typing.List[bytes] = []
             async for chunk in self._stream():
                 chunk_data.append(chunk)
             content_type = self.headers.get("content-type")
-            self._body = _body_parser(content_type, b"".join(chunk_data)) or None
+            print(chunk_data, content_type)
+            self._body = _body_parser(content_type, b"".join(chunk_data or [])) or None
             
         return self._body
 
@@ -196,7 +197,7 @@ class Request(Mapping[str, typing.Any]):
         yield b""
 
 
-def _body_parser(content_type: str, body: bytes) -> typing.Optional[typing.Union[str, dict]]:
+def _body_parser(content_type: str, body: typing.Optional[bytes] = b"") -> typing.Optional[typing.Union[str, dict]]:
     """
     Non stream body parser for http request
 
@@ -215,7 +216,7 @@ def _body_parser(content_type: str, body: bytes) -> typing.Optional[typing.Union
         return body.decode("utf-8")
     if content_type_lower == "application/json":
         return json.loads(body)
-    if content_type == "text/xml" or "application/xml":
+    if content_type == "text/xml" or content_type == "application/xml": #code nhu nay khong chay nhe
         raise NotImplementedError()
     
     return None

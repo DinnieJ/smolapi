@@ -1,3 +1,4 @@
 import os
 
-os.getenv
+MODULE_A = "HELLO"
+MODULE_B = "WORLD"
